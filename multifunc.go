@@ -2,6 +2,8 @@ package multifunc
 
 type Func func() (interface{}, error)
 
+type FuncNoResult func() error
+
 type ResFunc func() interface{}
 
 type MultiFunc struct {
@@ -16,6 +18,12 @@ func (mf *MultiFunc) Add(f Func) ResFunc {
 	return func() interface{} {
 		return mf.results[i]
 	}
+}
+
+func (mf *MultiFunc) AddNoResult(f FuncNoResult) {
+	mf.funcs = append(mf.funcs, func() (interface{}, error) {
+		return nil, f()
+	})
 }
 
 func (mf *MultiFunc) Run() error {
